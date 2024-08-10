@@ -4,7 +4,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.configuration.file.FileConfiguration
 import de.jonasheilig.heartGame.listeners.*
 import de.jonasheilig.heartGame.commands.*
-import de.jonasheilig.heartGame.ui.*
+import de.jonasheilig.heartGame.recipes.*
 
 class HeartGame : JavaPlugin() {
 
@@ -22,6 +22,7 @@ class HeartGame : JavaPlugin() {
         server.pluginManager.registerEvents(PlayerJoinListener(this), this)
         server.pluginManager.registerEvents(HeartEmeraldListener(this), this)
         server.pluginManager.registerEvents(ReviveBeaconListener(this), this)
+        server.pluginManager.registerEvents(EmptyHeartContainerListener(this), this)
 
         // Register commands
         getCommand("respawn")?.setExecutor(RespawnCommand())
@@ -30,6 +31,21 @@ class HeartGame : JavaPlugin() {
         getCommand("revive")?.setExecutor(ReviveCommand(this))
         getCommand("getitem")?.setExecutor(ItemCommand(this))
         getCommand("getitem")?.tabCompleter = ItemTabCompleter()
+
+        // Register recipes
+        val heartEmeraldRecipe = HeartEmeraldRecipe(this)
+        heartEmeraldRecipe.registerRecipe()
+
+        val reviveBeaconRecipe = ReviveBeaconRecipe(this)
+        reviveBeaconRecipe.registerRecipe()
+
+        val emptyHeartContainerRecipe = EmptyHeartContainerRecipe(this)
+        emptyHeartContainerRecipe.registerRecipe()
+
+        val reviveBeaconPartRecipe = ReviveBeaconPartRecipe(this)
+        reviveBeaconPartRecipe.registerRecipe()
+
+
 
         loadPlayerHearts()
     }
