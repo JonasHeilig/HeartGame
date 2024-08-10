@@ -24,6 +24,14 @@ class PlayerDeathListener(private val plugin: Plugin) : Listener {
                 config.set("players.${player.uniqueId}.hearts", player.health)
                 plugin.saveConfig()
             }
+
+            killer.health += 2.0
+            killer.health = killer.health
+            killer.sendMessage("You gained a heart! Your new max health is ${killer.health / 2} hearts.")
+
+            val config = plugin.config
+            config.set("players.${killer.uniqueId}.hearts", killer.health)
+            plugin.saveConfig()
         }
 
         val deathLocation = player.location
