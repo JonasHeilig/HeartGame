@@ -19,11 +19,15 @@ class HeartGame : JavaPlugin() {
         // Register listeners
         server.pluginManager.registerEvents(PlayerDeathListener(this), this)
         server.pluginManager.registerEvents(PlayerJoinListener(this), this)
+        server.pluginManager.registerEvents(HeartEmeraldListener(this), this)
 
         // Register commands
         getCommand("respawn")?.setExecutor(RespawnCommand())
         getCommand("givehearts")?.setExecutor(GiveHeartsCommand(this))
         getCommand("togglemode")?.setExecutor(SurvivalSpectatorToggleCommand(this))
+        getCommand("revive")?.setExecutor(ReviveCommand(this))
+        getCommand("item")?.setExecutor(ItemCommand(this))
+        getCommand("item")?.tabCompleter = ItemTabCompleter()
 
         loadPlayerHearts()
     }
