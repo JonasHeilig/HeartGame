@@ -6,3 +6,12 @@ commands:
   respawn:
     description: Respawn the player to a random location nearby.
     usage: /respawn
+  givehearts:
+    description: Give a player a custom amount of hearts.
+    usage: /givehearts <player> <amount>
+    permission: heartgame.givehearts
+    permission-message: You do not have permission to use this command.
+permissions:
+  heartgame.givehearts:
+    description: Allows the player to give other players hearts.
+    default: op
