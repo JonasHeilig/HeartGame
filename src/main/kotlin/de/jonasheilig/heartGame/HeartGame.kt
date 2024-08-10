@@ -23,6 +23,7 @@ class HeartGame : JavaPlugin() {
         // Register commands
         getCommand("respawn")?.setExecutor(RespawnCommand())
         getCommand("givehearts")?.setExecutor(GiveHeartsCommand(this))
+        getCommand("togglemode")?.setExecutor(SurvivalSpectatorToggleCommand(this))
 
         loadPlayerHearts()
     }

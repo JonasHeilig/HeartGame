@@ -1,5 +1,6 @@
 package de.jonasheilig.heartGame.listeners
 
+import de.jonasheilig.heartGame.mode.SurvivalSpectatorMode
 import de.jonasheilig.heartGame.utils.LocationUtils
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
@@ -10,28 +11,33 @@ import org.bukkit.entity.Player
 
 class PlayerDeathListener(private val plugin: Plugin) : Listener {
 
+    private val survivalSpectatorMode = SurvivalSpectatorMode(plugin)
+
     @EventHandler
     fun onPlayerDeath(event: PlayerDeathEvent) {
-        val player = event.entity
+        val player = event.entity as? Player ?: return
         val killer = event.entity.killer
 
         if (killer is Player) {
-            if (player.health > 2.0) {
-                player.health -= 2.0
-                player.sendMessage("You lost a heart! Your new max health is ${player.health / 2} hearts.")
-
-                val config = plugin.config
-                config.set("players.${player.uniqueId}.hearts", player.health)
-                plugin.saveConfig()
-            }
-
-            killer.health += 2.0
-            killer.health = killer.health
-            killer.sendMessage("You gained a heart! Your new max health is ${killer.health / 2} hearts.")
+            val killerNewHealth = (killer.health + 2.0).coerceAtMost(killer.maxHealth)
+            killer.health = killerNewHealth
+            killer.sendMessage("You gained a heart! Your new max health is ${killerNewHealth / 2} hearts.")
 
             val config = plugin.config
-            config.set("players.${killer.uniqueId}.hearts", killer.health)
+            config.set("players.${killer.uniqueId}.hearts", killerNewHealth)
             plugin.saveConfig()
+        }
+
+        val playerNewHealth = (player.health - 2.0).coerceAtLeast(0.0)
+        if (playerNewHealth > 0) {
+            player.health = playerNewHealth
+            player.sendMessage("You lost a heart! Your new max health is ${playerNewHealth / 2} hearts.")
+
+            val config = plugin.config
+            config.set("players.${player.uniqueId}.hearts", playerNewHealth)
+            plugin.saveConfig()
+        } else {
+            survivalSpectatorMode.enterSurvivalSpectatorMode(player)
         }
 
         val deathLocation = player.location

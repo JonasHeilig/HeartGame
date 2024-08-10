@@ -20,16 +20,7 @@ class SurvivalSpectatorMode(private val plugin: Plugin) : Listener {
         val player = event.entity as? Player ?: return
 
         if (player.health <= 0.0 && !modePlayers.contains(player)) {
-            player.gameMode = GameMode.SURVIVAL
-            player.addPotionEffect(PotionEffect(PotionEffectType.INVISIBILITY, Int.MAX_VALUE, 0, false, false))
-            player.isFlying = true
-            player.sendMessage("You have entered Visitor Mode because you have no hearts left.")
-
-            val config = plugin.config
-            config.set("players.${player.uniqueId}.hearts", player.health)
-            plugin.saveConfig()
-
-            modePlayers.add(player)
+            enterSurvivalSpectatorMode(player)
         }
     }
 
@@ -49,6 +40,19 @@ class SurvivalSpectatorMode(private val plugin: Plugin) : Listener {
         }
     }
 
+    fun enterSurvivalSpectatorMode(player: Player) {
+        player.gameMode = GameMode.SURVIVAL
+        player.addPotionEffect(PotionEffect(PotionEffectType.INVISIBILITY, Int.MAX_VALUE, 0, false, false))
+        player.isFlying = true
+        player.sendMessage("You have entered Survival Spectator mode because you have no hearts left.")
+
+        val config = plugin.config
+        config.set("players.${player.uniqueId}.hearts", player.health)
+        plugin.saveConfig()
+
+        modePlayers.add(player)
+    }
+
     fun toggleSurvivalSpectatorMode(player: Player) {
         if (modePlayers.contains(player)) {
             player.gameMode = GameMode.SURVIVAL
@@ -58,12 +62,11 @@ class SurvivalSpectatorMode(private val plugin: Plugin) : Listener {
             val config = plugin.config
             val savedHearts = config.getDouble("players.${player.uniqueId}.hearts", 20.0)
             player.health = savedHearts
-            player.health = savedHearts
+            player.sendMessage("You have exited Survival Spectator mode.")
 
             modePlayers.remove(player)
-            player.sendMessage("You have exited Visitor Mode mode.")
         } else {
-            player.sendMessage("You are not in Visitor Mode mode.")
+            player.sendMessage("You are not in Survival Spectator mode.")
         }
     }
 }

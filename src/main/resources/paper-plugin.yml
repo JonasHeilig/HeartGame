@@ -11,7 +11,14 @@ commands:
     usage: /givehearts <player> <amount>
     permission: heartgame.givehearts
     permission-message: You do not have permission to use this command.
+  survivalspectatortoggle:
+    description: Toggle Survival Spectator mode command
+    usage: /<command>
+    permission: heartgame.survivalspectatortoggle
 permissions:
   heartgame.givehearts:
     description: Allows the player to give other players hearts.
+    default: op
+  heartgame.survivalspectatortoggle:
+    description: Allows players to toggle Survival Spectator mode
     default: op
