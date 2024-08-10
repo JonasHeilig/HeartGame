@@ -3,6 +3,7 @@ package de.jonasheilig.heartGame.listeners
 import de.jonasheilig.heartGame.mode.SurvivalSpectatorMode
 import de.jonasheilig.heartGame.utils.LocationUtils
 import org.bukkit.Bukkit
+import org.bukkit.attribute.Attribute
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
@@ -19,9 +20,10 @@ class PlayerDeathListener(private val plugin: Plugin) : Listener {
         val killer = event.entity.killer
 
         if (killer is Player) {
-            val killerNewHealth = (killer.health + 2.0).coerceAtMost(killer.maxHealth)
+            val maxHealth = killer.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value ?: 20.0
+            val killerNewHealth = (killer.health + 2.0).coerceAtMost(maxHealth)
             killer.health = killerNewHealth
-            killer.sendMessage("You gained a heart! Your new max health is ${killerNewHealth / 2} hearts.")
+            killer.sendMessage("You gained a heart! Your new health is ${killerNewHealth / 2} hearts.")
 
             val config = plugin.config
             config.set("players.${killer.uniqueId}.hearts", killerNewHealth)
@@ -31,7 +33,7 @@ class PlayerDeathListener(private val plugin: Plugin) : Listener {
         val playerNewHealth = (player.health - 2.0).coerceAtLeast(0.0)
         if (playerNewHealth > 0) {
             player.health = playerNewHealth
-            player.sendMessage("You lost a heart! Your new max health is ${playerNewHealth / 2} hearts.")
+            player.sendMessage("You lost a heart! Your new health is ${playerNewHealth / 2} hearts.")
 
             val config = plugin.config
             config.set("players.${player.uniqueId}.hearts", playerNewHealth)

@@ -19,6 +19,10 @@ commands:
     description: Revive a player with full health
     usage: /<command> <player>
     permission: heartgame.revive
+  getitem:
+    description: Give a custom item to the player
+    usage: /getitem <item_name>
+    permission: heartgame.item
 permissions:
   heartgame.givehearts:
     description: Allows the player to give other players hearts.
@@ -28,4 +32,7 @@ permissions:
     default: op
   heartgame.revive:
     description: Allows players to use the revive command
+    default: op
+  heartgame.item:
+    description: Allows players to receive custom items.
     default: op

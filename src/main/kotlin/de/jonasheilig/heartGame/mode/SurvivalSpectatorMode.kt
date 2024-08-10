@@ -91,7 +91,7 @@ class SurvivalSpectatorMode(private val plugin: Plugin) : Listener {
         plugin.saveConfig()
     }
 
-    private fun isInSpectatorMode(player: Player): Boolean {
+    fun isInSpectatorMode(player: Player): Boolean {
         return plugin.config.getBoolean("players.${player.uniqueId}.inSpectatorMode", false)
     }
 }
