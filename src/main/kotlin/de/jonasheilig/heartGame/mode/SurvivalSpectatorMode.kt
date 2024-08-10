@@ -1,7 +1,10 @@
 package de.jonasheilig.heartGame.mode
 
+import net.kyori.adventure.text.Component
 import org.bukkit.GameMode
+import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.event.EventHandler
@@ -9,17 +12,16 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.plugin.Plugin
 
 class SurvivalSpectatorMode(private val plugin: Plugin) : Listener {
-
-    private val modePlayers = mutableSetOf<Player>()
 
     @EventHandler
     fun onPlayerDeath(event: PlayerDeathEvent) {
         val player = event.entity as? Player ?: return
 
-        if (player.health <= 0.0 && !modePlayers.contains(player)) {
+        if (player.health <= 0.0) {
             enterSurvivalSpectatorMode(player)
         }
     }
@@ -27,7 +29,7 @@ class SurvivalSpectatorMode(private val plugin: Plugin) : Listener {
     @EventHandler
     fun onPlayerInteract(event: PlayerInteractEvent) {
         val player = event.player
-        if (modePlayers.contains(player)) {
+        if (isInSpectatorMode(player)) {
             event.isCancelled = true
         }
     }
@@ -35,8 +37,16 @@ class SurvivalSpectatorMode(private val plugin: Plugin) : Listener {
     @EventHandler
     fun onPlayerQuit(event: PlayerQuitEvent) {
         val player = event.player
-        if (modePlayers.contains(player)) {
-            modePlayers.remove(player)
+        if (isInSpectatorMode(player)) {
+            savePlayerMode(player, false)
+        }
+    }
+
+    @EventHandler
+    fun onPlayerJoin(event: PlayerJoinEvent) {
+        val player = event.player
+        if (isInSpectatorMode(player)) {
+            enterSurvivalSpectatorMode(player)
         }
     }
 
@@ -46,15 +56,12 @@ class SurvivalSpectatorMode(private val plugin: Plugin) : Listener {
         player.isFlying = true
         player.sendMessage("You have entered Survival Spectator mode because you have no hearts left.")
 
-        val config = plugin.config
-        config.set("players.${player.uniqueId}.hearts", player.health)
-        plugin.saveConfig()
-
-        modePlayers.add(player)
+        giveSpectatorCompass(player)
+        savePlayerMode(player, true)
     }
 
     fun toggleSurvivalSpectatorMode(player: Player) {
-        if (modePlayers.contains(player)) {
+        if (isInSpectatorMode(player)) {
             player.gameMode = GameMode.SURVIVAL
             player.removePotionEffect(PotionEffectType.INVISIBILITY)
             player.isFlying = false
@@ -64,9 +71,27 @@ class SurvivalSpectatorMode(private val plugin: Plugin) : Listener {
             player.health = savedHearts
             player.sendMessage("You have exited Survival Spectator mode.")
 
-            modePlayers.remove(player)
+            savePlayerMode(player, false)
         } else {
             player.sendMessage("You are not in Survival Spectator mode.")
         }
+    }
+
+    private fun giveSpectatorCompass(player: Player) {
+        val compass = ItemStack(Material.COMPASS)
+        val meta = compass.itemMeta
+        meta?.displayName(Component.text("Teleport Compass"))
+        compass.itemMeta = meta
+        player.inventory.addItem(compass)
+    }
+
+    private fun savePlayerMode(player: Player, inSpectatorMode: Boolean) {
+        val config = plugin.config
+        config.set("players.${player.uniqueId}.inSpectatorMode", inSpectatorMode)
+        plugin.saveConfig()
+    }
+
+    private fun isInSpectatorMode(player: Player): Boolean {
+        return plugin.config.getBoolean("players.${player.uniqueId}.inSpectatorMode", false)
     }
 }

@@ -15,10 +15,17 @@ commands:
     description: Toggle Survival Spectator mode command
     usage: /<command>
     permission: heartgame.survivalspectatortoggle
+  revive:
+    description: Revive a player with full health
+    usage: /<command> <player>
+    permission: heartgame.revive
 permissions:
   heartgame.givehearts:
     description: Allows the player to give other players hearts.
     default: op
   heartgame.survivalspectatortoggle:
     description: Allows players to toggle Survival Spectator mode
+    default: op
+  heartgame.revive:
+    description: Allows players to use the revive command
     default: op

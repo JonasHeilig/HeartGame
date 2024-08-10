@@ -14,9 +14,13 @@ class SurvivalSpectatorToggleCommand(private val plugin: HeartGame) : CommandExe
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender is Player) {
             val player = sender as Player
-            survivalSpectatorMode.toggleSurvivalSpectatorMode(player)
+            if (player.hasPermission("heartgame.survivalspectatortoggle")) {
+                survivalSpectatorMode.toggleSurvivalSpectatorMode(player)
+            } else {
+                player.sendMessage("You do not have permission to use this command.")
+            }
         } else {
-            sender.sendMessage("§cOnly players can use this command.")
+            sender.sendMessage("Only players can use this command.")
         }
         return true
     }
