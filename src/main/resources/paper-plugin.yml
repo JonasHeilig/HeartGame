@@ -1,0 +1,8 @@
+name: HeartGame
+version: '1.0-SNAPSHOT'
+main: de.jonasheilig.heartGame.HeartGame
+api-version: '1.21'
+commands:
+  respawn:
+    description: Respawn the player to a random location nearby.
+    usage: /respawn
